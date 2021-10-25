@@ -20,7 +20,6 @@ import com.acs.smartcard.ReaderException;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcService;
 import com.github.skjolber.nfc.command.Utils;
-import com.github.skjolber.nfc.external.core.R;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
@@ -120,19 +119,19 @@ public abstract class AbstractService extends Service {
         }
     };
 
-    private Notification  buildInitialNotification(){
-        return new NotificationCompat.Builder(getBaseContext(),"2")
+    private Notification buildInitialNotification() {
+        return new NotificationCompat.Builder(getBaseContext(), "2")
                 .setContentTitle("Service is being started")
-            .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
-        .setOngoing(true)
-        .setOnlyAlertOnce(true)
-        .build();
+                .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .build();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(1,buildInitialNotification());
+        startForeground(1, buildInitialNotification());
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
@@ -204,7 +203,7 @@ public abstract class AbstractService extends Service {
             int serviceHandle = store.add(slotNumber, technologies);
 
             byte[] uid = ServiceUtil.getPcscUid(wrapper);
-            if(uid != null) {
+            if (uid != null) {
                 Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
             }
 
@@ -221,7 +220,7 @@ public abstract class AbstractService extends Service {
     protected void desfire(int slotNumber, byte[] atr, IsoDepWrapper wrapper) {
         try {
             byte[] uid = ServiceUtil.getPcscUid(wrapper);
-            if(uid != null) {
+            if (uid != null) {
                 Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
             }
 
