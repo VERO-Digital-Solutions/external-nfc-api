@@ -1,5 +1,6 @@
 package com.github.skjolber.nfc.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,13 +14,19 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+
 import com.acs.smartcard.ReaderException;
+import com.github.skjolber.nfc.NfcReader;
+import com.github.skjolber.nfc.NfcService;
+import com.github.skjolber.nfc.command.Utils;
+import com.github.skjolber.nfc.external.core.R;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
+import com.github.skjolber.nfc.hce.tech.mifare.IsoDepAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
-import com.github.skjolber.nfc.hce.tech.mifare.IsoDepAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareDesfireTagFactory;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightTagFactory;
@@ -27,9 +34,6 @@ import com.github.skjolber.nfc.hce.tech.mifare.NdefAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.NdefFormattableAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.NfcAAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.PN532NfcAAdapter;
-import com.github.skjolber.nfc.NfcReader;
-import com.github.skjolber.nfc.NfcService;
-import com.github.skjolber.nfc.command.Utils;
 import com.github.skjolber.nfc.messages.NfcReaderServiceListener;
 import com.github.skjolber.nfc.service.desfire.DesfireReader;
 
@@ -116,10 +120,19 @@ public abstract class AbstractService extends Service {
         }
     };
 
+    private Notification  buildInitialNotification(){
+        return new NotificationCompat.Builder(getBaseContext(),"2")
+                .setContentTitle("Service is being started")
+            .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
+        .setOngoing(true)
+        .setOnlyAlertOnce(true)
+        .build();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-
+        startForeground(1,buildInitialNotification());
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
