@@ -120,7 +120,7 @@ public abstract class AbstractService extends Service {
     };
 
     private Notification buildInitialNotification() {
-        return new NotificationCompat.Builder(getBaseContext(), "2")
+        return new NotificationCompat.Builder(getBaseContext(), "1453")
                 .setContentTitle("Service is being started")
                 .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
                 .setOngoing(true)
@@ -131,7 +131,7 @@ public abstract class AbstractService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(1, buildInitialNotification());
+        startForeground(999, buildInitialNotification());
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
@@ -861,7 +861,8 @@ public abstract class AbstractService extends Service {
     @Override
     public void onDestroy() {
         stopReceivingStatusBroadcasts();
-
+        stopForeground(true);
+        stopSelf();
         super.onDestroy();
     }
 }
