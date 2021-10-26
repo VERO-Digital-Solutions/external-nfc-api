@@ -1,6 +1,8 @@
 package com.github.skjolber.nfc.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,10 +12,12 @@ import android.content.SharedPreferences;
 import android.nfc.NdefMessage;
 import android.nfc.tech.MifareUltralight;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.acs.smartcard.ReaderException;
@@ -120,7 +124,7 @@ public abstract class AbstractService extends Service {
     };
 
     private Notification buildInitialNotification() {
-        return new NotificationCompat.Builder(getBaseContext(), "1453")
+        return new NotificationCompat.Builder(getBaseContext(), getNotificationChannelId())
                 .setContentTitle("Service is being started")
                 .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
                 .setOngoing(true)
@@ -128,10 +132,29 @@ public abstract class AbstractService extends Service {
                 .build();
     }
 
+    private String getNotificationChannelId() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return createNotificationChannel();
+        } else {
+            // If earlier version channel ID is not used
+            // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
+            return "";
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel() {
+        NotificationChannel chan = new NotificationChannel("1",
+                "External NFC Reader", NotificationManager.IMPORTANCE_NONE);
+        NotificationManager mngr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mngr.createNotificationChannel(chan);
+        return "1";
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(999, buildInitialNotification());
+        startForeground(1, buildInitialNotification());
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
