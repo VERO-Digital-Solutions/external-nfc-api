@@ -1,5 +1,7 @@
 package com.github.skjolber.nfc.external;
 
+import static com.github.skjolber.nfc.service.AbstractService.ICON_RES;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -130,7 +133,7 @@ public class MainActivity extends Activity {
                     bluetoothReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4, AcrAutomaticPICCPolling.PICC_POLLING_INTERVAL_1000);
                     bluetoothReader.setAutomaticPolling(true);
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Problem initializing reader", e);
 
                 result = e;
@@ -158,14 +161,14 @@ public class MainActivity extends Activity {
 
                 Log.d(TAG, "Reader open");
 
-            	if(intent.hasExtra(NfcReader.EXTRA_READER_CONTROL)) {
+                if (intent.hasExtra(NfcReader.EXTRA_READER_CONTROL)) {
 
                     AcrReader reader = intent.getParcelableExtra(NfcReader.EXTRA_READER_CONTROL);
 
                     new InitReaderTask(reader).execute();
-            	} else {
-            		Log.d(TAG, "No reader");
-            	}
+                } else {
+                    Log.d(TAG, "No reader");
+                }
 
             } else if (NfcReader.ACTION_READER_CLOSED.equals(action)) {
                 Log.d(TAG, "Reader closed");
@@ -188,13 +191,13 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Custom broacast receiver: " + action);
 
             if (NfcService.ACTION_SERVICE_STARTED.equals(action)) {
-                if(fragment.isUsbMode()) {
+                if (fragment.isUsbMode()) {
                     setUsbServiceStarted(true);
                 } else {
                     setBluetoothServiceStarted(true);
                 }
             } else if (NfcService.ACTION_SERVICE_STOPPED.equals(action)) {
-                if(fragment.isUsbMode()) {
+                if (fragment.isUsbMode()) {
                     setUsbServiceStarted(false);
                 } else {
                     setBluetoothServiceStarted(false);
@@ -404,11 +407,11 @@ public class MainActivity extends Activity {
 
         private void refreshBluetoothSpinner() {
             List<String> names = new ArrayList<>();
-            for(BluetoothResult result : bluetoothResults) {
+            for (BluetoothResult result : bluetoothResults) {
                 names.add(result.getName());
             }
 
-            if(names.isEmpty()) {
+            if (names.isEmpty()) {
                 activity.getString(R.string.bluetooth_device_none);
             }
 
@@ -416,8 +419,8 @@ public class MainActivity extends Activity {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             bluetoothResultsSpinner.setAdapter(adapter);
 
-            for(int i = 0; i < bluetoothResults.size(); i++) {
-                if(bluetoothResults.get(i).isSelected()) {
+            for (int i = 0; i < bluetoothResults.size(); i++) {
+                if (bluetoothResults.get(i).isSelected()) {
                     bluetoothResultsSpinner.setSelection(i);
 
                     break;
@@ -441,7 +444,7 @@ public class MainActivity extends Activity {
         }
 
         public BluetoothResult getSelectedBluetoothResult() {
-            if(bluetoothResults.isEmpty()) {
+            if (bluetoothResults.isEmpty()) {
                 return null;
             }
 
@@ -449,20 +452,20 @@ public class MainActivity extends Activity {
         }
 
         public void addBluetoothDevice(BluetoothResult result) {
-            for(BluetoothResult r : bluetoothResults) {
+            for (BluetoothResult r : bluetoothResults) {
                 r.setSelected(false);
             }
 
             int index = -1;
-            for(int i = 0; i < bluetoothResults.size(); i++) {
+            for (int i = 0; i < bluetoothResults.size(); i++) {
                 BluetoothResult r = bluetoothResults.get(i);
-                if(result.equals(r)) {
+                if (result.equals(r)) {
                     index = i;
                     break;
                 }
             }
 
-            if(index == -1) {
+            if (index == -1) {
                 index = bluetoothResults.size();
                 bluetoothResults.add(index, result);
                 saveBluetoothResultsToPreferences();
@@ -477,8 +480,9 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Load bluetooth results from preferences");
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
             String string = prefs.getString(PREFERENCE_BLUETOOTH_RESULTS, null);
-            if(string != null) {
-                Type type = new TypeToken<List<BluetoothResult>>(){}.getType();
+            if (string != null) {
+                Type type = new TypeToken<List<BluetoothResult>>() {
+                }.getType();
                 Gson gson = new Gson();
                 List<BluetoothResult> list = gson.fromJson(string, type);
 
@@ -488,7 +492,8 @@ public class MainActivity extends Activity {
 
         public void saveBluetoothResultsToPreferences() {
             Log.d(TAG, "Save bluetooth results to preferences");
-            Type type = new TypeToken<List<BluetoothResult>>(){}.getType();
+            Type type = new TypeToken<List<BluetoothResult>>() {
+            }.getType();
             Gson gson = new Gson();
             String string = gson.toJson(bluetoothResults, type);
 
@@ -541,7 +546,7 @@ public class MainActivity extends Activity {
         public void displayItem(int pos) {
             View bluetooth = view.findViewById(R.id.bluetoothModeLayout);
             View usb = view.findViewById(R.id.usbModeLayout);
-            if(pos == 0) {
+            if (pos == 0) {
                 // usb
                 usb.setVisibility(View.VISIBLE);
                 bluetooth.setVisibility(View.GONE);
@@ -580,7 +585,12 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Start reader service");
 
             Intent intent = new Intent(this, BackgroundUsbService.class);
-            startService(intent);
+            intent.putExtra(ICON_RES, org.nfctools.android.R.drawable.ic_launcher);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
         }
     }
 
@@ -590,7 +600,7 @@ public class MainActivity extends Activity {
             stopBluetoothReaderService();
         } else {
             BluetoothResult result = fragment.getSelectedBluetoothResult();
-            if(result != null) {
+            if (result != null) {
                 startBluetoothService(result);
             } else {
                 addBluetoothDevice(null);
@@ -730,7 +740,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(resultCode == Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
             BluetoothResult result = new BluetoothResult(data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME), data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_ADDRESS), true);
             fragment.addBluetoothDevice(result);
 

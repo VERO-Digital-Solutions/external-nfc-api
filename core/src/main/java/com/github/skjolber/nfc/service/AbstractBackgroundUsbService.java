@@ -432,7 +432,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             startDetectingReader();
         }
 
-        return Service.START_STICKY;
+        return super.onStartCommand(intent,flags,startId);
     }
 
     protected void initialize() {

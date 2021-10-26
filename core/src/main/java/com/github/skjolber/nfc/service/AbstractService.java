@@ -75,6 +75,7 @@ public abstract class AbstractService extends Service {
     public static final String PREFERENCE_AUTO_READ_NDEF = "preference_auto_read_ndef";
     public static final String PREFERENCE_NTAG21X_ULTRALIGHT = "preference_ntag21x_ultralights";
     public static final String PREFERENCE_UID_MODE = "preference_uid_mode";
+    public static final String ICON_RES = "icon_res";
 
     private static final String TAG = AbstractService.class.getName();
 
@@ -123,10 +124,10 @@ public abstract class AbstractService extends Service {
         }
     };
 
-    private Notification buildInitialNotification() {
+    private Notification buildInitialNotification(Integer smallIcon) {
         return new NotificationCompat.Builder(getBaseContext(), getNotificationChannelId())
                 .setContentTitle("Service is being started")
-                .setSmallIcon(androidx.core.R.drawable.notify_panel_notification_icon_bg)
+                .setSmallIcon(smallIcon)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
@@ -154,12 +155,21 @@ public abstract class AbstractService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(1, buildInitialNotification());
+        startForeground(1, buildInitialNotification(androidx.core.R.drawable.notify_panel_notification_icon_bg));
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
 
         refreshPreferences();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        NotificationManager mngr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Integer smallIcon = intent.getIntExtra(ICON_RES, androidx.core.R.drawable.notify_panel_notification_icon_bg);
+        mngr.notify(1, buildInitialNotification(smallIcon));
+        return START_STICKY;
     }
 
     public void refreshPreferences() {

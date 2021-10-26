@@ -155,7 +155,7 @@ public class BluetoothBackgroundService extends AbstractService {
         }
         connectReader();
 
-        return Service.START_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
