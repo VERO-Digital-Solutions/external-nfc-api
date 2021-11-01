@@ -5,10 +5,15 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.util.Log;
 
-import com.github.skjolber.nfc.command.ACRCommands;
-import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import com.github.skjolber.nfc.NfcTag;
+import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.command.Utils;
+import com.github.skjolber.nfc.external.core.R;
+import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
 
 import org.nfctools.api.ApduTag;
 import org.nfctools.api.TagType;
@@ -28,7 +33,7 @@ public class ServiceUtil {
     private static byte[] mifareClassicUIDCommand = new byte[]{(byte) 0xFF, (byte) 0xCA, 0x00, 0x00, 0x00};
 
     // https://stackoverflow.com/questions/9514684/what-apdu-command-gets-card-id
-    private static final byte[] GET_TAG_ID = new byte[]{(byte)0xFF, (byte)0xCA, 0x00, 0x00, 0x00};
+    private static final byte[] GET_TAG_ID = new byte[]{(byte) 0xFF, (byte) 0xCA, 0x00, 0x00, 0x00};
 
     public static void sendTagIdIndent(Context context, byte[] uid) {
         final Intent intent = new Intent(NfcTag.ACTION_TAG_DISCOVERED);
@@ -222,7 +227,7 @@ public class ServiceUtil {
     public static byte[] getPcscUid(IsoDepWrapper wrapper) {
         try {
             byte[] response = wrapper.transceive(GET_TAG_ID);
-            if(ACRCommands.isSuccessControl(response)) {
+            if (ACRCommands.isSuccessControl(response)) {
                 byte[] uid = new byte[response.length - 2];
                 System.arraycopy(response, 0, uid, 0, uid.length);
                 return uid;
@@ -233,5 +238,27 @@ public class ServiceUtil {
         return null;
     }
 
+    public static void startUsbService(@NonNull Context context, @Nullable Integer notificationIconRes) {
+        Intent intent = new Intent();
+        intent.setClassName(
+                "com.github.skjolber.nfc.external",
+                "com.github.skjolber.nfc.service.BackgroundUsbService"
+        );
+        if (notificationIconRes == null) {
+            intent.putExtra("icon_res", R.drawable.ic_launcher);
+        } else {
+            intent.putExtra("icon_res", notificationIconRes);
+        }
+        ContextCompat.startForegroundService(context, intent);
+    }
+
+    public static void stopUsbService(@NonNull Context context) {
+        Intent intent = new Intent();
+        intent.setClassName(
+                "com.github.skjolber.nfc.external",
+                "com.github.skjolber.nfc.service.BackgroundUsbService"
+        );
+        context.stopService(intent);
+    }
 
 }
