@@ -172,6 +172,7 @@ public abstract class AbstractService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
+        if(action == null) return super.onStartCommand(intent, flags, startId);
         if(action.equals(UPDATE_ACTION)) {
             String notificationText = intent.getStringExtra(TITLE_EXTRA);
             int icon = intent.getIntExtra(ICON_EXTRA, R.drawable.ic_launcher);

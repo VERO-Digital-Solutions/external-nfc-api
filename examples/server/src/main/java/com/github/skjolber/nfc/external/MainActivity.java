@@ -1,10 +1,14 @@
 package com.github.skjolber.nfc.external;
 
+import static com.github.skjolber.nfc.service.AbstractService.ICON_EXTRA;
 import static com.github.skjolber.nfc.service.AbstractService.TITLE_EXTRA;
+import static com.github.skjolber.nfc.service.AbstractService.UPDATE_ACTION;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,9 +57,21 @@ public class MainActivity extends Activity {
     protected static final String PREFERENCE_MODE = "mode";
     protected static final String PREFERENCE_BLUETOOTH_RESULTS = "bluetoothResults";
 
+    private String notificationChannel = "notificationChannel";
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(NotificationManager mngr) {
+        NotificationChannel chan = new NotificationChannel("144",
+                "External NFC Reader xx", NotificationManager.IMPORTANCE_NONE);
+        mngr.createNotificationChannel(chan);
+        return notificationChannel;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createNotificationChannel(getSystemService(NotificationManager.class));
+
         setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -572,6 +588,12 @@ public class MainActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // do nothing
+        Intent intent = new Intent(this, BackgroundUsbService.class);
+        intent.putExtra(TITLE_EXTRA, "Haha");
+        intent.setAction(UPDATE_ACTION);
+        intent.putExtra(ICON_EXTRA,R.drawable.ic_launcher);
+        startForegroundService(intent);
+
     }
 
     public void startReaderService(View view) {
@@ -585,7 +607,9 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Start reader service");
 
             Intent intent = new Intent(this, BackgroundUsbService.class);
-            intent.putExtra(TITLE_EXTRA, org.nfctools.android.R.drawable.ic_launcher);
+            intent.putExtra(TITLE_EXTRA, "Haha");
+            intent.putExtra(TITLE_EXTRA, "Bob");
+            intent.setAction("UPDATE");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);
             } else {
