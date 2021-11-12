@@ -19,6 +19,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.acs.smartcard.ReaderException;
 import com.github.skjolber.nfc.NfcReader;
@@ -77,6 +78,10 @@ public abstract class AbstractService extends Service {
     public static final String PREFERENCE_NTAG21X_ULTRALIGHT = "preference_ntag21x_ultralights";
     public static final String PREFERENCE_UID_MODE = "preference_uid_mode";
     public static final String TITLE_EXTRA = "title_extra";
+    public static final String ICON_EXTRA = "icon_extra";
+    public static final String UPDATE_ACTION = "updateAction";
+    public static final String STOP_ACTION = "stopAction";
+
 
     private static final String TAG = AbstractService.class.getName();
 
@@ -125,38 +130,38 @@ public abstract class AbstractService extends Service {
         }
     };
 
-    private Notification buildInitialNotification(String notificationTitle) {
-        return new NotificationCompat.Builder(getBaseContext(), getNotificationChannelId())
-                .setContentTitle(notificationTitle)
-                .setSmallIcon(R.drawable.notification)
+    private NotificationManagerCompat mngr;
+
+    private final int notificationId = 23;
+    private final String notificationChannel = "notificationChannel";
+
+    private final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, notificationChannel);
+
+
+    void updateNotification(String title, int icon) {
+        Notification notification = notificationBuilder
+                .setContentTitle(title)
+                .setOnlyAlertOnce(true)
+                .setSmallIcon(icon)
+                .setOngoing(true)
+                .build();
+        mngr.notify(notificationId, notification);
+    }
+
+    private Notification buildInitialNotification() {
+        return notificationBuilder
+                .setContentTitle("Service is initializing")
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
     }
 
-    private String getNotificationChannelId() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return createNotificationChannel();
-        } else {
-            // If earlier version channel ID is not used
-            // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
-            return "";
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel() {
-        NotificationChannel chan = new NotificationChannel("1",
-                "External NFC Reader", NotificationManager.IMPORTANCE_NONE);
-        NotificationManager mngr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mngr.createNotificationChannel(chan);
-        return "1";
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(1, buildInitialNotification("Service is being started"));
+        mngr = NotificationManagerCompat.from(this);
+        startForeground(notificationId, buildInitialNotification());
         startReceivingStatusBroadcasts();
 
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
@@ -166,11 +171,20 @@ public abstract class AbstractService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        NotificationManager mngr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String notificationText = intent.getStringExtra(TITLE_EXTRA);
-        mngr.notify(1, buildInitialNotification(notificationText));
-        return START_STICKY;
+        String action = intent.getAction();
+        if(action.equals(UPDATE_ACTION)) {
+            String notificationText = intent.getStringExtra(TITLE_EXTRA);
+            int icon = intent.getIntExtra(ICON_EXTRA, R.drawable.ic_launcher);
+            updateNotification(notificationText,icon);
+            return START_STICKY;
+
+        } else if(action.equals(STOP_ACTION)) {
+            stopForeground(true);
+            stopSelf();
+            return START_STICKY;
+        } else{
+            return super.onStartCommand(intent, flags, startId);
+        }
     }
 
     public void refreshPreferences() {
