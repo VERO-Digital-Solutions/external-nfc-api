@@ -1,6 +1,6 @@
 package com.github.skjolber.nfc.external;
 
-import static com.github.skjolber.nfc.service.AbstractService.ICON_RES;
+import static com.github.skjolber.nfc.service.AbstractService.TITLE_EXTRA;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -585,7 +585,7 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Start reader service");
 
             Intent intent = new Intent(this, BackgroundUsbService.class);
-            intent.putExtra(ICON_RES, org.nfctools.android.R.drawable.ic_launcher);
+            intent.putExtra(TITLE_EXTRA, org.nfctools.android.R.drawable.ic_launcher);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);
             } else {
