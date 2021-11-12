@@ -301,7 +301,7 @@ public abstract class AbstractService extends Service {
 
             MfClassicReaderWriter readerWriter = new AcrMfClassicReaderWriter(acsTag, memoryLayout);
 
-            byte[] uid;
+            byte[] uid = new byte[0];
             try {
                 uid = readerWriter.getTagInfo().getId();
 
@@ -309,13 +309,11 @@ public abstract class AbstractService extends Service {
 
                 if (ServiceUtil.isBlank(uid)) {
                     Log.w(TAG, "Unable to read tag UID");
-                    uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
                 } else {
                     Log.i(TAG, "Read tag id " + com.github.skjolber.nfc.command.Utils.toHexString(uid));
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Problem reading tag UID", e);
-                uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
 
                 canReadBlocks = false;
             }
@@ -404,7 +402,7 @@ public abstract class AbstractService extends Service {
 
             MfClassicReaderWriter readerWriter = new AcrMfClassicReaderWriter(acsTag, memoryLayout);
 
-            byte[] uid;
+            byte[] uid = new byte[0];
             try {
                 uid = readerWriter.getTagInfo().getId();
 
@@ -412,13 +410,10 @@ public abstract class AbstractService extends Service {
 
                 if (ServiceUtil.isBlank(uid)) {
                     Log.w(TAG, "Unable to read tag UID");
-                    uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
                 } else {
-                    Log.i(TAG, "Read tag id " + com.github.skjolber.nfc.command.Utils.toHexString(uid));
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Problem reading tag UID", e);
-                uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
 
                 canReadBlocks = false;
             }
@@ -581,7 +576,7 @@ public abstract class AbstractService extends Service {
 
             MfClassicReaderWriter readerWriter = new AcrMfClassicReaderWriter(acsTag, memoryLayout);
 
-            byte[] uid;
+            byte[] uid = new byte[0];
             try {
                 uid = readerWriter.getTagInfo().getId();
 
@@ -589,13 +584,11 @@ public abstract class AbstractService extends Service {
 
                 if (ServiceUtil.isBlank(uid)) {
                     Log.w(TAG, "Unable to read tag UID");
-                    uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
                 } else {
                     Log.i(TAG, "Read tag id " + Utils.toHexString(uid));
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Problem reading tag UID", e);
-                uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
 
                 canReadBlocks = false;
             }
@@ -770,13 +763,12 @@ public abstract class AbstractService extends Service {
             // 3 bytes from index 0
             // 4 bytes from index 1
 
-            byte[] uid;
+            byte[] uid = new byte[0];
             if (canReadBlocks) {
                 uid = new byte[7];
                 System.arraycopy(initBlocks[0].getData(), 0, uid, 0, 3);
                 System.arraycopy(initBlocks[1].getData(), 0, uid, 3, 4);
             } else {
-                uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
             }
 
             if (canReadBlocks && readNDEF && version != null) {

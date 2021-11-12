@@ -51,7 +51,7 @@ public class ServiceUtil {
 
         MfBlock[] initBlocks = null;
 
-        byte[] uid;
+        byte[] uid = new byte[0];
         try {
             // get uid from first two blocks:
             // 3 bytes from index 0
@@ -64,7 +64,6 @@ public class ServiceUtil {
             System.arraycopy(initBlocks[1].getData(), 0, uid, 3, 4);
         } catch (Exception e) {
             Log.w(TAG, "Problem reading tag UID", e);
-            uid = new byte[]{MifareClassicTagFactory.NXP_MANUFACTURER_ID};
         }
 
         ServiceUtil.sendTagIdIndent(context, uid);

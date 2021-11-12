@@ -22,7 +22,6 @@ import com.github.skjolber.nfc.service.TechnologyType;
 
 public class MifareClassicTagFactory extends TagFactory {
 
-    public static final int NXP_MANUFACTURER_ID = 0x04;
 
     public static final String EXTRA_SAK = "sak";
     public static final String EXTRA_ATQA = "atqa";
@@ -225,10 +224,6 @@ public class MifareClassicTagFactory extends TagFactory {
 
         if (id == null) {
             throw new IllegalArgumentException("No tag id");
-        }
-
-        if (id[0] != NXP_MANUFACTURER_ID) {
-            throw new IllegalArgumentException("Non-NXP tag id " + Utils.toHexString(id));
         }
 
         intent.putExtra(NfcAdapter.EXTRA_TAG, createTag(id, techArray, bundles.toArray(new Bundle[bundles.size()]), serviceHandle, tagService));
