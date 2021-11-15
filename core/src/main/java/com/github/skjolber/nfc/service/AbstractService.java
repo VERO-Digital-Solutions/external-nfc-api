@@ -1,8 +1,6 @@
 package com.github.skjolber.nfc.service;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,12 +10,10 @@ import android.content.SharedPreferences;
 import android.nfc.NdefMessage;
 import android.nfc.tech.MifareUltralight;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -171,19 +167,20 @@ public abstract class AbstractService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return START_STICKY;
         String action = intent.getAction();
-        if(action == null) return super.onStartCommand(intent, flags, startId);
-        if(action.equals(UPDATE_ACTION)) {
+        if (action == null) return super.onStartCommand(intent, flags, startId);
+        if (action.equals(UPDATE_ACTION)) {
             String notificationText = intent.getStringExtra(TITLE_EXTRA);
             int icon = intent.getIntExtra(ICON_EXTRA, R.drawable.ic_launcher);
-            updateNotification(notificationText,icon);
+            updateNotification(notificationText, icon);
             return START_STICKY;
 
-        } else if(action.equals(STOP_ACTION)) {
+        } else if (action.equals(STOP_ACTION)) {
             stopForeground(true);
             stopSelf();
             return START_STICKY;
-        } else{
+        } else {
             return super.onStartCommand(intent, flags, startId);
         }
     }
