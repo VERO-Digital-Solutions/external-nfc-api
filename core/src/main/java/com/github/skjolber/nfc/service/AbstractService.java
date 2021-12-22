@@ -141,22 +141,21 @@ public abstract class AbstractService extends Service {
         manager.notify(notificationId, notification);
     }
 
-    private static void showInitialNotification(Context ctx) {
+    private static Notification buildInitialNotification(Context ctx) {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, notificationChannel);
-        NotificationManagerCompat manager = NotificationManagerCompat.from(ctx);
-        Notification notification = notificationBuilder
+        return notificationBuilder
                 .setContentTitle("Service is initializing")
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
-        manager.notify(notificationId, notification);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        showInitialNotification(this);
+        startForeground(notificationId, buildInitialNotification(this));
+        buildInitialNotification(this);
         startReceivingStatusBroadcasts();
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
         refreshPreferences();
