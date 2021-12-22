@@ -161,20 +161,6 @@ public abstract class AbstractService extends Service {
         refreshPreferences();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null) return START_STICKY;
-        String action = intent.getAction();
-        if (action == null) return super.onStartCommand(intent, flags, startId);
-        if (action.equals(STOP_ACTION)) {
-            stopForeground(true);
-            stopSelf();
-            return START_STICKY;
-        } else {
-            return super.onStartCommand(intent, flags, startId);
-        }
-    }
-
     public void refreshPreferences() {
         readNDEF = isReadNDEF();
         ntag21xUltralights = isNTAG21x();
