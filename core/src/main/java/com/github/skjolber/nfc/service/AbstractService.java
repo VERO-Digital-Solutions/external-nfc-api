@@ -126,42 +126,39 @@ public abstract class AbstractService extends Service {
         }
     };
 
-    private NotificationManagerCompat mngr;
+    private static final int notificationId = 23;
+    private static final String notificationChannel = "notificationChannel";
 
-    private final int notificationId = 23;
-    private final String notificationChannel = "notificationChannel";
-
-    private final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, notificationChannel);
-
-
-    void updateNotification(String title, int icon) {
+    public static void updateNotification(Context ctx, String title, int icon) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, notificationChannel);
+        NotificationManagerCompat manager = NotificationManagerCompat.from(ctx);
         Notification notification = notificationBuilder
                 .setContentTitle(title)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(icon)
                 .setOngoing(true)
                 .build();
-        mngr.notify(notificationId, notification);
+        manager.notify(notificationId, notification);
     }
 
-    private Notification buildInitialNotification() {
-        return notificationBuilder
+    private static void showInitialNotification(Context ctx) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, notificationChannel);
+        NotificationManagerCompat manager = NotificationManagerCompat.from(ctx);
+        Notification notification = notificationBuilder
                 .setContentTitle("Service is initializing")
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
+        manager.notify(notificationId, notification);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mngr = NotificationManagerCompat.from(this);
-        startForeground(notificationId, buildInitialNotification());
+        showInitialNotification(this);
         startReceivingStatusBroadcasts();
-
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
-
         refreshPreferences();
     }
 
@@ -170,13 +167,7 @@ public abstract class AbstractService extends Service {
         if (intent == null) return START_STICKY;
         String action = intent.getAction();
         if (action == null) return super.onStartCommand(intent, flags, startId);
-        if (action.equals(UPDATE_ACTION)) {
-            String notificationText = intent.getStringExtra(TITLE_EXTRA);
-            int icon = intent.getIntExtra(ICON_EXTRA, R.drawable.ic_launcher);
-            updateNotification(notificationText, icon);
-            return START_STICKY;
-
-        } else if (action.equals(STOP_ACTION)) {
+        if (action.equals(STOP_ACTION)) {
             stopForeground(true);
             stopSelf();
             return START_STICKY;
