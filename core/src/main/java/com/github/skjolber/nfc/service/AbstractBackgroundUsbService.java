@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
 import com.acs.smartcard.RemovedCardException;
 import com.acs.smartcard.TlvProperties;
+import com.github.skjolber.nfc.external.core.BuildConfig;
 import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
 import com.github.skjolber.nfc.hce.IAcr1222LBinder;
 import com.github.skjolber.nfc.hce.IAcr122UBinder;
@@ -474,7 +476,11 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         });
 
         // Register receiver for USB permission
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE);
+        } else {
+            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        }
 
         readerScanner = new Scanner(this);
     }

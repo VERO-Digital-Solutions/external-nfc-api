@@ -38,6 +38,7 @@ import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.nfc.tech.TagTechnology;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -149,7 +150,11 @@ public abstract class NfcDetectorActivity extends Activity {
 
 	protected void initializeNfc() {
 		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE);
+		} else {
+			nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+		}
 
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         IntentFilter ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
