@@ -474,7 +474,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         });
 
         // Register receiver for USB permission
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
 
         readerScanner = new Scanner(this);
     }
