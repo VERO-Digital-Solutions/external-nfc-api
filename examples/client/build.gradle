@@ -1,10 +1,6 @@
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
 
-    lintOptions {
-        abortOnError false
-    }
 
     defaultConfig {
         applicationId "com.github.skjolber.nfc.external.client"
@@ -17,6 +13,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+    lint {
+        abortOnError false
     }
 }
 

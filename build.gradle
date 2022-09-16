@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:7.2.0'
     }
 }
 
@@ -48,7 +48,7 @@ configure(exampleProjects()) {
 
 configure(libraryProjects()) {
     apply plugin: 'com.android.library'
-    apply plugin: 'com.vanniktech.maven.publish'
+//    apply plugin: 'com.vanniktech.maven.publish'
 }
 
 allprojects {

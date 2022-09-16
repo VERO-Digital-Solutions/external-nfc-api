@@ -2,9 +2,6 @@ android {
     compileSdkVersion 32
     buildToolsVersion '30.0.3'
 
-    lintOptions {
-        abortOnError false
-    }
 
     defaultConfig {
         minSdkVersion 24
@@ -16,6 +13,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    lint {
+        abortOnError false
     }
 }
 
