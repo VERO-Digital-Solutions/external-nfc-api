@@ -154,7 +154,7 @@ public class ServiceUtil {
     }
 
     public static TagType identifyTagType(String name, byte[] historicalBytes) {
-
+        Log.i(TAG,"Trying to identify TagType");
         if (name != null) {
             if (name.contains("1252") || name.contains("1255")) {
                 if (historicalBytes.length >= 11) {

@@ -96,7 +96,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
         @Override
         public void handleMessage(Message message) {
-            //Log.v(TAG, "Handle message");
+            Log.v(TAG, "Handle message");
 
             AbstractBackgroundUsbService activity = activityReference.get();
             if (activity != null) {
@@ -450,7 +450,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             @Override
             public void onStateChange(int slot, int prevState, int currState) {
 
-                // Log.d(TAG, "From state " + prevState + " to " + currState);
+                 Log.d(TAG, "From state " + prevState + " to " + currState);
 
                 if (prevState < Reader.CARD_UNKNOWN || prevState > Reader.CARD_SPECIFIC) {
                     prevState = Reader.CARD_UNKNOWN;
@@ -461,12 +461,10 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                 }
 
                 if (prevState == Reader.CARD_ABSENT && currState == Reader.CARD_PRESENT) {
-                    //Log.v(TAG, "Tag present on reader");
-
+                    Log.v(TAG, "Tag present on reader");
                     onTagPresent(slot);
                 } else if (currState == Reader.CARD_ABSENT) {
-                    //Log.v(TAG, "Tag absent on reader");
-
+                    Log.v(TAG, "Tag absent on reader");
                     onTagAbsent(slot);
                 } else {
                     Log.d(TAG, "Not action for state transition from " + stateStrings[prevState] + " to " + stateStrings[currState]);
@@ -496,7 +494,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             int slotNumber = params[0];
 
             try {
-                //Log.i(TAG, "Init tag at slot " + slotNumber);
+                Log.i(TAG, "Init tag at slot " + slotNumber);
 
                 // https://en.wikipedia.org/wiki/Answer_to_reset#General_structure
                 // http://smartcard-atr.appspot.com
@@ -551,7 +549,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
     }
 
     public void onTagPresent(int slot) {
-        //Log.d(TAG, "onTagPresent");
+        Log.d(TAG, "onTagPresent");
 
         operations = null;
 
