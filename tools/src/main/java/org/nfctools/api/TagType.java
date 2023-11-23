@@ -15,11 +15,11 @@
  */
 package org.nfctools.api;
 
-import java.util.Arrays;
-
 import android.util.Log;
 
 import com.github.skjolber.nfc.command.Utils;
+
+import java.util.Arrays;
 
 public enum TagType {
 
@@ -90,9 +90,9 @@ public enum TagType {
 	
 	public static TagType identifyTagType(byte[] historicalBytes) {
 		TagType tagType = TagType.UNKNOWN;
+		String string = Utils.toHexString(historicalBytes);
+		Log.d(TAG, "Trying to identify historical bytes: " + string);
 		if (historicalBytes.length >= 11) {
-			//Log.d(TAG, Utils.toHexString(historicalBytes));
-
 			int tagId = (historicalBytes[13] & 0xff) << 8 | (historicalBytes[14] & 0xff);
 
 			switch (tagId) {
