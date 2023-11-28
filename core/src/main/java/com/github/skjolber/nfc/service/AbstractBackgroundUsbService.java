@@ -511,10 +511,10 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                 } else {
                     tagType = TagType.UNKNOWN;
                 }
+                byte [] parsedAtr = new byte[]{0x41, 0x4B, 0x31,0x30, 0x31, 0x30, 0x30, 0x30};
+                Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(parsedAtr));
 
-                Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(atr));
-
-                handleTagInit(slotNumber, atr, tagType);
+                handleTagInit(slotNumber, parsedAtr, tagType);
             } catch (RemovedCardException e) {
                 Log.d(TAG, "Tag removed before it could be powered; ignore.", e);
             } catch (Exception e) {
