@@ -1,7 +1,6 @@
 package com.github.skjolber.nfc.service;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,16 +19,6 @@ import com.acs.smartcard.Reader;
 import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
 import com.acs.smartcard.RemovedCardException;
-import com.acs.smartcard.TlvProperties;
-import com.github.skjolber.nfc.external.core.BuildConfig;
-import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
-import com.github.skjolber.nfc.hce.IAcr1222LBinder;
-import com.github.skjolber.nfc.hce.IAcr122UBinder;
-import com.github.skjolber.nfc.hce.IAcr1251UBinder;
-import com.github.skjolber.nfc.hce.IAcr1252UBinder;
-import com.github.skjolber.nfc.hce.IAcr1255UBinder;
-import com.github.skjolber.nfc.hce.IAcr1281UBinder;
-import com.github.skjolber.nfc.hce.IAcr1283Binder;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.command.ACR1222Commands;
@@ -43,6 +32,14 @@ import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.command.ACRReaderTechnology;
 import com.github.skjolber.nfc.command.ReaderWrapper;
 import com.github.skjolber.nfc.command.Utils;
+import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
+import com.github.skjolber.nfc.hce.IAcr1222LBinder;
+import com.github.skjolber.nfc.hce.IAcr122UBinder;
+import com.github.skjolber.nfc.hce.IAcr1251UBinder;
+import com.github.skjolber.nfc.hce.IAcr1252UBinder;
+import com.github.skjolber.nfc.hce.IAcr1255UBinder;
+import com.github.skjolber.nfc.hce.IAcr1281UBinder;
+import com.github.skjolber.nfc.hce.IAcr1283Binder;
 import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;
 
 import org.nfctools.api.TagType;
@@ -511,7 +508,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                 } else {
                     tagType = TagType.UNKNOWN;
                 }
-                byte [] parsedAtr = new byte[]{0x41, 0x4B, 0x31,0x30, 0x31, 0x30, 0x30, 0x30};
+                byte[] parsedAtr = new byte[]{(byte) 0x41, (byte) 0x4B, (byte) 0x31, (byte) 0x30, (byte) 0x31, (byte) 0x30, (byte) 0x30, (byte) 0x30};
                 Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(parsedAtr));
                 tagType = TagType.DESFIRE_EV1;
                 handleTagInit(slotNumber, parsedAtr, tagType);
