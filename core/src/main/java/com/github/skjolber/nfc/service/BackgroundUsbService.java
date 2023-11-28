@@ -22,6 +22,7 @@ public class BackgroundUsbService extends AbstractBackgroundUsbService {
         if (state != Reader.CARD_SPECIFIC) {
             ServiceUtil.sendTechBroadcast(BackgroundUsbService.this);
         } else {
+            Log.i(TAG,"Handing tag in uidMode = " + uidMode);
             if (uidMode) {
                 handleTagInitUIDMode(slotNumber, atr, tagType);
             } else {

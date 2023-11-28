@@ -520,7 +520,15 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             } catch (Exception e) {
                 Log.w(TAG, "Problem initiating tag", e);
 
-                ServiceUtil.sendTechBroadcast(AbstractBackgroundUsbService.this);
+                byte [] parsedAtr = new byte[]{0x41, 0x4B, 0x31,0x30, 0x31, 0x30, 0x30, 0x30};
+                String hex = Utils.toHexString(parsedAtr);
+                Log.i(TAG,"HexAtr = " + hex);
+                try {
+                    handleTagInit(slotNumber,parsedAtr,TagType.UNKNOWN);
+                } catch (ReaderException ex) {
+                    Log.e(TAG,"Exception occured");
+                    ServiceUtil.sendTechBroadcast(AbstractBackgroundUsbService.this);
+                }
             }
 
             return result;
