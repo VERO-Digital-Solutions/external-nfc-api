@@ -505,7 +505,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
                     return null;
                 }
-                final TagType tagType;
+                TagType tagType;
                 if (atr != null) {
                     tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
                 } else {
@@ -513,7 +513,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                 }
                 byte [] parsedAtr = new byte[]{0x41, 0x4B, 0x31,0x30, 0x31, 0x30, 0x30, 0x30};
                 Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(parsedAtr));
-
+                tagType = TagType.DESFIRE_EV1;
                 handleTagInit(slotNumber, parsedAtr, tagType);
             } catch (RemovedCardException e) {
                 Log.d(TAG, "Tag removed before it could be powered; ignore.", e);

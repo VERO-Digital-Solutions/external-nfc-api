@@ -1,0 +1,19 @@
+apply plugin: 'maven-publish'
+
+tasks.register('androidSourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'external-nfc-api'
+                version = '1.0.0'
+                artifact(androidSourcesJar)
+            }
+        }
+    }
+}
