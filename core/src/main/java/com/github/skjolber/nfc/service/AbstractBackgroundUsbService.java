@@ -257,11 +257,11 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
     public static byte[] passthrough(byte[] payload) {
         byte[] cmd = new byte[payload.length + 5];
-        cmd[0] = (byte)0xff;
+        cmd[0] = (byte) 0xff;
         cmd[1] = 0x0;
         cmd[2] = 0x0;
         cmd[3] = 0x0;
-        cmd[4] = (byte)(payload.length & 0xFF);
+        cmd[4] = (byte) (payload.length & 0xFF);
 
         System.arraycopy(payload, 0, cmd, 5, payload.length);
 
@@ -431,7 +431,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             startDetectingReader();
         }
 
-        return super.onStartCommand(intent,flags,startId);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     protected void initialize() {
@@ -447,7 +447,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             @Override
             public void onStateChange(int slot, int prevState, int currState) {
 
-                 Log.d(TAG, "From state " + prevState + " to " + currState);
+                Log.d(TAG, "From state " + prevState + " to " + currState);
 
                 if (prevState < Reader.CARD_UNKNOWN || prevState > Reader.CARD_SPECIFIC) {
                     prevState = Reader.CARD_UNKNOWN;
@@ -503,29 +503,20 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                     return null;
                 }
                 TagType tagType;
-                if (atr != null) {
-                    tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
-                } else {
-                    tagType = TagType.UNKNOWN;
-                }
-                byte[] parsedAtr = new byte[]{(byte) 0x41, (byte) 0x4B, (byte) 0x31, (byte) 0x30, (byte) 0x31, (byte) 0x30, (byte) 0x30, (byte) 0x30};
-                Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(parsedAtr));
+//                if (atr != null) {
+//                    tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
+//                } else {
+//                    tagType = TagType.UNKNOWN;
+//                }
+
                 tagType = TagType.DESFIRE_EV1;
-                handleTagInit(slotNumber, parsedAtr, tagType);
+                Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(atr));
+                handleTagInit(slotNumber, atr, tagType);
             } catch (RemovedCardException e) {
                 Log.d(TAG, "Tag removed before it could be powered; ignore.", e);
             } catch (Exception e) {
                 Log.w(TAG, "Problem initiating tag", e);
-
-                byte [] parsedAtr = new byte[]{0x41, 0x4B, 0x31,0x30, 0x31, 0x30, 0x30, 0x30};
-                String hex = Utils.toHexString(parsedAtr);
-                Log.i(TAG,"HexAtr = " + hex);
-                try {
-                    handleTagInit(slotNumber,parsedAtr,TagType.UNKNOWN);
-                } catch (ReaderException ex) {
-                    Log.e(TAG,"Exception occured");
-                    ServiceUtil.sendTechBroadcast(AbstractBackgroundUsbService.this);
-                }
+                ServiceUtil.sendTechBroadcast(AbstractBackgroundUsbService.this);
             }
 
             return result;
