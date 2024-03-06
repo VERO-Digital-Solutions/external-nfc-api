@@ -40,6 +40,8 @@ import com.github.skjolber.nfc.hce.IAcr1252UBinder;
 import com.github.skjolber.nfc.hce.IAcr1255UBinder;
 import com.github.skjolber.nfc.hce.IAcr1281UBinder;
 import com.github.skjolber.nfc.hce.IAcr1283Binder;
+import com.github.skjolber.nfc.service.tag.DefaultTagTypeDetector;
+import com.github.skjolber.nfc.service.tag.TagTypeDetector;
 import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;
 
 import org.nfctools.api.TagType;
@@ -503,13 +505,11 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                     return null;
                 }
                 TagType tagType;
-//                if (atr != null) {
-//                    tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
-//                } else {
-//                    tagType = TagType.UNKNOWN;
-//                }
-
-                tagType = TagType.DESFIRE_EV1;
+                tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
+                if(tagType == TagType.UNKNOWN) {
+                    TagTypeDetector<ReaderWrapper> tagTypeDetector = new DefaultTagTypeDetector<>();
+                    tagType = tagTypeDetector.parseAtr(reader, atr);
+                }
                 Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(atr));
                 handleTagInit(slotNumber, atr, tagType);
             } catch (RemovedCardException e) {

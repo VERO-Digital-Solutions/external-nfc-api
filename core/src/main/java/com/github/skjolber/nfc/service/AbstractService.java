@@ -26,6 +26,7 @@ import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.hce.tech.mifare.IsoDepAdapter;
+import com.github.skjolber.nfc.hce.tech.mifare.IsoDepTagFactory;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareDesfireTagFactory;
@@ -84,6 +85,8 @@ public abstract class AbstractService extends Service {
     protected MifareUltralightTagFactory mifareUltralightTagFactory = new MifareUltralightTagFactory();
     protected MifareClassicTagFactory mifareClassicTagFactory = new MifareClassicTagFactory();
     protected MifareDesfireTagFactory mifareDesfireTagFactory = new MifareDesfireTagFactory();
+
+    protected IsoDepTagFactory isoDepTagFactory = new IsoDepTagFactory();
 
     protected boolean readNDEF;
     protected boolean ntag21xUltralights;
@@ -230,6 +233,30 @@ public abstract class AbstractService extends Service {
             }
 
             Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, null, uid, true, TechnologyType.getHistoricalBytes(atr), binder);
+
+            sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.d(TAG, "Problem reading from tag", e);
+
+            ServiceUtil.sendTechBroadcast(this);
+        }
+    }
+
+    protected void isoDep(int slotNumber, byte[] atr, IsoDepWrapper wrapper) {
+        try {
+            byte[] uid = ServiceUtil.getPcscUid(wrapper);
+            if (uid != null) {
+                Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
+            }
+
+            List<TagTechnology> technologies = new ArrayList<TagTechnology>();
+            technologies.add(new NfcAAdapter(slotNumber, wrapper, false));
+            technologies.add(new IsoDepAdapter(slotNumber, wrapper, false));
+
+            int serviceHandle = store.add(slotNumber, technologies);
+
+            Intent intent = isoDepTagFactory.getTag(serviceHandle,null,uid,false,TechnologyType.getHistoricalBytes(atr),binder);
+            Log.i(TAG, "Tag technologies " + technologies);
 
             sendBroadcast(intent);
         } catch (Exception e) {

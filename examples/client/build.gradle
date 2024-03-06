@@ -20,6 +20,7 @@ android {
 }
 
 dependencies {
-    api project(':core')
+    implementation project(':core')
+    implementation 'androidx.core:core:1.6.0'
     api 'com.google.code.ndef-tools-for-android:ndeftools:1.2.4'
 }
