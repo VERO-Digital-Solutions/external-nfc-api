@@ -74,6 +74,8 @@ public enum TagType {
 
 	INFINEON_MIFARE_SLE_1K("Infineon Mifare SLE 66R35"),
 
+	ISO_14443_TYPE_A("RFID - ISO 14443 Type A - Android"),
+
 	;
 	
 	private final String name;

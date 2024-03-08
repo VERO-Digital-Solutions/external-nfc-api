@@ -1,7 +1,6 @@
 package com.github.skjolber.nfc.service;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,16 +19,6 @@ import com.acs.smartcard.Reader;
 import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
 import com.acs.smartcard.RemovedCardException;
-import com.acs.smartcard.TlvProperties;
-import com.github.skjolber.nfc.external.core.BuildConfig;
-import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
-import com.github.skjolber.nfc.hce.IAcr1222LBinder;
-import com.github.skjolber.nfc.hce.IAcr122UBinder;
-import com.github.skjolber.nfc.hce.IAcr1251UBinder;
-import com.github.skjolber.nfc.hce.IAcr1252UBinder;
-import com.github.skjolber.nfc.hce.IAcr1255UBinder;
-import com.github.skjolber.nfc.hce.IAcr1281UBinder;
-import com.github.skjolber.nfc.hce.IAcr1283Binder;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.command.ACR1222Commands;
@@ -43,6 +32,16 @@ import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.command.ACRReaderTechnology;
 import com.github.skjolber.nfc.command.ReaderWrapper;
 import com.github.skjolber.nfc.command.Utils;
+import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
+import com.github.skjolber.nfc.hce.IAcr1222LBinder;
+import com.github.skjolber.nfc.hce.IAcr122UBinder;
+import com.github.skjolber.nfc.hce.IAcr1251UBinder;
+import com.github.skjolber.nfc.hce.IAcr1252UBinder;
+import com.github.skjolber.nfc.hce.IAcr1255UBinder;
+import com.github.skjolber.nfc.hce.IAcr1281UBinder;
+import com.github.skjolber.nfc.hce.IAcr1283Binder;
+import com.github.skjolber.nfc.service.tag.DefaultTagTypeDetector;
+import com.github.skjolber.nfc.service.tag.TagTypeDetector;
 import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;
 
 import org.nfctools.api.TagType;
@@ -260,11 +259,11 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
     public static byte[] passthrough(byte[] payload) {
         byte[] cmd = new byte[payload.length + 5];
-        cmd[0] = (byte)0xff;
+        cmd[0] = (byte) 0xff;
         cmd[1] = 0x0;
         cmd[2] = 0x0;
         cmd[3] = 0x0;
-        cmd[4] = (byte)(payload.length & 0xFF);
+        cmd[4] = (byte) (payload.length & 0xFF);
 
         System.arraycopy(payload, 0, cmd, 5, payload.length);
 
@@ -434,7 +433,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             startDetectingReader();
         }
 
-        return super.onStartCommand(intent,flags,startId);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     protected void initialize() {
@@ -450,7 +449,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
             @Override
             public void onStateChange(int slot, int prevState, int currState) {
 
-                 Log.d(TAG, "From state " + prevState + " to " + currState);
+                Log.d(TAG, "From state " + prevState + " to " + currState);
 
                 if (prevState < Reader.CARD_UNKNOWN || prevState > Reader.CARD_SPECIFIC) {
                     prevState = Reader.CARD_UNKNOWN;
@@ -505,21 +504,18 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
                     return null;
                 }
-                final TagType tagType;
-                if (atr != null) {
-                    tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
-                } else {
-                    tagType = TagType.UNKNOWN;
+                TagType tagType;
+                tagType = ServiceUtil.identifyTagType(reader.getReaderName(), atr);
+                if(tagType == TagType.UNKNOWN) {
+                    TagTypeDetector<ReaderWrapper> tagTypeDetector = new DefaultTagTypeDetector<>();
+                    tagType = tagTypeDetector.parseAtr(reader, atr);
                 }
-
                 Log.d(TAG, "Tag inited as " + tagType + " for ATR " + Utils.toHexString(atr));
-
                 handleTagInit(slotNumber, atr, tagType);
             } catch (RemovedCardException e) {
                 Log.d(TAG, "Tag removed before it could be powered; ignore.", e);
             } catch (Exception e) {
                 Log.w(TAG, "Problem initiating tag", e);
-
                 ServiceUtil.sendTechBroadcast(AbstractBackgroundUsbService.this);
             }
 

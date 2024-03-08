@@ -3,6 +3,7 @@ package com.github.skjolber.nfc.service;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.nfc.tech.NfcF;
 import android.util.Log;
 
 import androidx.annotation.NonNull;

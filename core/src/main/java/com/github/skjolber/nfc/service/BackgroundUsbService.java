@@ -22,6 +22,7 @@ public class BackgroundUsbService extends AbstractBackgroundUsbService {
         if (state != Reader.CARD_SPECIFIC) {
             ServiceUtil.sendTechBroadcast(BackgroundUsbService.this);
         } else {
+            Log.i(TAG,"Handing tag in uidMode = " + uidMode);
             if (uidMode) {
                 handleTagInitUIDMode(slotNumber, atr, tagType);
             } else {
@@ -51,7 +52,10 @@ public class BackgroundUsbService extends AbstractBackgroundUsbService {
             infineonMifare(slotNumber, atr, tagType, acsTag, wrapper);
         } else if (tagType == TagType.DESFIRE_EV1) {
             desfire(slotNumber, atr, wrapper);
-        } else if (tagType == TagType.ISO_14443_TYPE_B_NO_HISTORICAL_BYTES || tagType == TagType.ISO_14443_TYPE_A_NO_HISTORICAL_BYTES) {
+        }else if (tagType == TagType.ISO_DEP) {
+            isoDep(slotNumber,atr,wrapper);
+        }
+        else if (tagType == TagType.ISO_14443_TYPE_B_NO_HISTORICAL_BYTES || tagType == TagType.ISO_14443_TYPE_A_NO_HISTORICAL_BYTES) {
             hce(slotNumber, atr, wrapper);
         } else {
             ServiceUtil.sendTechBroadcast(BackgroundUsbService.this);

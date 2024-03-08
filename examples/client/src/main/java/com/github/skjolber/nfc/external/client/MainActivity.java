@@ -30,6 +30,9 @@ import org.ndeftools.wellknown.UriRecord;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -47,6 +50,8 @@ import com.github.skjolber.android.nfc.tech.Ndef;
 import com.github.skjolber.android.nfc.tech.NdefFormatable;
 import com.github.skjolber.android.nfc.tech.NfcA;
 import com.github.skjolber.android.nfc.tech.NfcB;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -62,6 +67,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.acs.Acr1222LReader;
@@ -76,6 +83,7 @@ import com.github.skjolber.nfc.acs.AcrReader;
 import com.github.skjolber.nfc.acs.AcrReaderException;
 import com.github.skjolber.nfc.desfire.DesfireReader;
 import com.github.skjolber.nfc.desfire.VersionInfo;
+import com.github.skjolber.nfc.service.BackgroundUsbService;
 import com.github.skjolber.nfc.service.IsoDepDeviceHint;
 import com.github.skjolber.nfc.util.CommandAPDU;
 import com.github.skjolber.nfc.util.ResponseAPDU;
@@ -113,6 +121,35 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		initializeExternalNfc();
 		
         setDetecting(true);
+		createChannel();
+		startService();
+	}
+
+	void createChannel() {
+		NotificationChannel channel = null;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			channel = new NotificationChannel("notificationChannel", "notificationChannel", NotificationManager.IMPORTANCE_HIGH);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			channel.setDescription("Channel for foreground service notification");
+		}
+
+		NotificationManager notificationManager = getSystemService(NotificationManager.class);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			notificationManager.createNotificationChannel(channel);
+		}
+	}
+
+	protected void startService() {
+		Intent intent = new Intent();
+		intent.setClassName(this, BackgroundUsbService.class.getName());
+		ContextCompat.startForegroundService(this,intent);
+	}
+
+	protected void stopService() {
+		Intent intent = new Intent();
+		intent.setClassName(this, BackgroundUsbService.class.getName());
+		stopService(intent);
 	}
     
 	@Override
