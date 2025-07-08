@@ -34,7 +34,6 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()
-            withJavadocJar() // Optional, if you have Javadoc generation
         }
     }
     namespace = "com.github.skjolber.nfc.external.api"
