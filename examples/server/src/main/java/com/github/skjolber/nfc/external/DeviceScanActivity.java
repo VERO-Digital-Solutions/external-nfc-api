@@ -168,15 +168,15 @@ public class DeviceScanActivity extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_scan:
-                mLeDeviceListAdapter.clear();
-                scanLeDevice(true);
-                break;
-            case R.id.menu_stop:
-                scanLeDevice(false);
-                break;
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.menu_scan) {
+            mLeDeviceListAdapter.clear();
+            scanLeDevice(true);
+        } else if (itemId == R.id.menu_stop) {
+            scanLeDevice(false);
         }
+
         return true;
     }
 

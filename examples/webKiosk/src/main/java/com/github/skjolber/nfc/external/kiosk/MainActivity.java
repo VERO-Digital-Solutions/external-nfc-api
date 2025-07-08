@@ -65,7 +65,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		//
 		webSettings.setDatabaseEnabled(true);
 		webSettings.setGeolocationEnabled(true);
-		webSettings.setAppCacheEnabled(true);
+		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setSupportMultipleWindows(false);
 

@@ -740,16 +740,13 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
 
-            case R.id.menu_preferences: {
-                openPreferences(item.getActionView());
-
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.menu_preferences) {
+            openPreferences(item.getActionView());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
 
     }
