@@ -1,18 +1,18 @@
 apply plugin: 'com.android.library'
+apply from: 'publish.gradle'
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 36
 
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 36
     }
 
     buildTypes {
@@ -23,12 +23,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lint {
         abortOnError false
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar() // Optional, if you have Javadoc generation
+        }
+    }
+    namespace = "org.nfctools.android"
 }
 
 dependencies {

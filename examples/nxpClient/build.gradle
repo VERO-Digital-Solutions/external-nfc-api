@@ -1,11 +1,11 @@
 android {
-    compileSdkVersion 29
+    compileSdkVersion 36
 
 
     defaultConfig {
         applicationId "com.github.skjolber.nfc.external.nxpclient"
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 36
     }
 
     buildTypes {
@@ -17,6 +17,7 @@ android {
     lint {
         abortOnError false
     }
+    namespace = "com.github.skjolber.nfc.external.nxpclient"
 }
 
 dependencies {

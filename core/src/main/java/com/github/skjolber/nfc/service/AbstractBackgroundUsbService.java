@@ -15,6 +15,8 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.acs.smartcard.Reader;
 import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
@@ -474,7 +476,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
         // Register receiver for USB permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE);
+            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
         } else {
             mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         }
@@ -575,7 +577,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
                 // register receiver
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(ACTION_USB_PERMISSION);
-                registerReceiver(usbDevicePermissionReceiver, filter);
+                ContextCompat.registerReceiver(this, usbDevicePermissionReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
                 if (!delay) {
                     readerScanner.resume();

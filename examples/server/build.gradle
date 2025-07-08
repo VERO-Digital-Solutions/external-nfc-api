@@ -1,11 +1,11 @@
 android {
-    compileSdkVersion 29
+    compileSdkVersion 36
 
 
     defaultConfig {
         applicationId "com.github.skjolber.nfc.external"
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 36
     }
     buildTypes {
         release {
@@ -15,12 +15,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lint {
         abortOnError false
     }
+    namespace = "com.github.skjolber.nfc.external"
 }
 
 dependencies {

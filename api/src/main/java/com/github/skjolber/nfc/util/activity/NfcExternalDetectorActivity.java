@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -153,9 +154,12 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
             filter.addAction(NfcTag.ACTION_TAG_DISCOVERED);
             filter.addAction(NfcTag.ACTION_TECH_DISCOVERED);
             filter.addAction(NfcTag.ACTION_TAG_LEFT_FIELD);
-            
-            registerReceiver(tagReceiver, filter);
-		}
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(tagReceiver, filter,RECEIVER_NOT_EXPORTED);
+            } else {
+				registerReceiver(tagReceiver, filter);
+			}
+        }
 	}
 
 	private void stopReceivingTagBroadcasts() {
@@ -179,7 +183,11 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
             filter.addAction(NfcReader.ACTION_READER_OPENED);
             filter.addAction(NfcReader.ACTION_READER_CLOSED);
             
-            registerReceiver(readerReceiver, filter);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				registerReceiver(tagReceiver, filter,RECEIVER_NOT_EXPORTED);
+			} else {
+				registerReceiver(tagReceiver, filter);
+			}
 		}
 	}
 
@@ -203,8 +211,12 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
     		IntentFilter filter = new IntentFilter();
             filter.addAction(NfcService.ACTION_SERVICE_STARTED);
             filter.addAction(NfcService.ACTION_SERVICE_STOPPED);
-            
-            registerReceiver(serviceReceiver, filter);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				registerReceiver(tagReceiver, filter,RECEIVER_NOT_EXPORTED);
+			} else {
+				registerReceiver(tagReceiver, filter);
+			}
 		}
 	}
 

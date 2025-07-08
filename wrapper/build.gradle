@@ -1,11 +1,12 @@
+apply from: 'publish.gradle'
+
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 36
 
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 36
     }
 
     buildTypes {
@@ -17,13 +18,20 @@ android {
     lint {
         abortOnError false
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar() // Optional, if you have Javadoc generation
+        }
+    }
+    namespace = "com.github.skjolber.nfc.android"
 }
 
 
 
 dependencies {
 
-    api ("com.github.skjolber.android.nfc:wrapper:1.0.0@aar")
+    api ("com.github.skjolber.android.nfc:wrapper:1.0.1@aar")
 
 }
 

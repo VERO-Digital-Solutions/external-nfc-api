@@ -1,33 +1,40 @@
 apply from: 'publish.gradle'
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 36
 
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 36
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lint {
         abortOnError false
     }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar() // Optional, if you have Javadoc generation
+        }
+    }
+    namespace = "com.github.skjolber.nfc.external.core"
 }
 
 dependencies {
     api project(':tools')
-    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.core:core:1.13.1'
     implementation files('../libs/acssmc-1.1.5.jar')
     //compileOnly files('../libs/acsbt-1.0.1.aar')
     compileOnly files('../libs/acsbt-1.0.1.ext.jar')

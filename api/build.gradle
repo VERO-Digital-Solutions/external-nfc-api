@@ -1,11 +1,17 @@
+plugins {
+    id 'com.android.library'
+    // If you are using Kotlin in this module, also add:
+    // id 'org.jetbrains.kotlin.android'
+}
+apply from: 'publish.gradle'
+
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 36
 
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 36
     }
 
     buildTypes {
@@ -16,20 +22,29 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lint {
         abortOnError false
     }
-
+    buildFeatures {
+        aidl = true
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar() // Optional, if you have Javadoc generation
+        }
+    }
+    namespace = "com.github.skjolber.nfc.external.api"
 }
 
-task clearJar(type: Delete) {
+tasks.register('clearJar', Delete) {
     delete 'build/outputs/externalnfcapi.jar'
 }
 
-task makeJar(type: Copy) {
+tasks.register('makeJar', Copy) {
     from('build/intermediates/bundles/default/')
     into('build/outputs/')
     include('classes.jar')

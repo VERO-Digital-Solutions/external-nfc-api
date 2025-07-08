@@ -432,6 +432,7 @@ public abstract class NfcDetectorActivity extends Activity {
 	 * @deprecated should use broadcast intent instead (but it seems not to work)
 	 */
 
+	@Deprecated
 	public boolean isPresent(Tag tag) {
 		String[] techList = tag.getTechList();
 

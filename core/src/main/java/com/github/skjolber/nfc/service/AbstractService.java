@@ -1,5 +1,7 @@
 package com.github.skjolber.nfc.service;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE;
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -10,18 +12,19 @@ import android.content.SharedPreferences;
 import android.nfc.NdefMessage;
 import android.nfc.tech.MifareUltralight;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.acs.smartcard.ReaderException;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcService;
 import com.github.skjolber.nfc.command.Utils;
-import com.github.skjolber.nfc.external.core.R;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
@@ -148,7 +151,7 @@ public abstract class AbstractService extends Service {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, notificationChannel);
         return notificationBuilder
                 .setContentTitle("Service is initializing")
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(org.nfctools.android.R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .build();
@@ -157,7 +160,11 @@ public abstract class AbstractService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(notificationId, buildInitialNotification(this));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(notificationId, buildInitialNotification(this), FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
+        } else {
+            startForeground(notificationId, buildInitialNotification(this));
+        }
         buildInitialNotification(this);
         startReceivingStatusBroadcasts();
         this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
@@ -255,7 +262,7 @@ public abstract class AbstractService extends Service {
 
             int serviceHandle = store.add(slotNumber, technologies);
 
-            Intent intent = isoDepTagFactory.getTag(serviceHandle,null,uid,false,TechnologyType.getHistoricalBytes(atr),binder);
+            Intent intent = isoDepTagFactory.getTag(serviceHandle, null, uid, false, TechnologyType.getHistoricalBytes(atr), binder);
             Log.i(TAG, "Tag technologies " + technologies);
 
             sendBroadcast(intent);
@@ -870,8 +877,7 @@ public abstract class AbstractService extends Service {
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(NfcService.ACTION_SERVICE_STATUS);
                 filter.addAction(NfcReader.ACTION_READER_STATUS);
-
-                registerReceiver(statusReceiver, filter);
+                ContextCompat.registerReceiver(this, statusReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
             }
         }
     }

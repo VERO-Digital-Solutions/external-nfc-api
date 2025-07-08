@@ -245,7 +245,7 @@ public class ServiceUtil {
                 "com.github.skjolber.nfc.service.BackgroundUsbService"
         );
         if (notificationIconRes == null) {
-            intent.putExtra("icon_res", R.drawable.ic_launcher);
+            intent.putExtra("icon_res", org.nfctools.android.R.drawable.ic_launcher);
         } else {
             intent.putExtra("icon_res", notificationIconRes);
         }

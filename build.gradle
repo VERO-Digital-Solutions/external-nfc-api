@@ -2,19 +2,19 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:8.11.0'
     }
 }
 
 plugins {
-    id "com.vanniktech.maven.publish" version '0.9.0' apply false
-    id 'com.github.ben-manes.versions' version '0.28.0' apply false
-    id 'org.owasp.dependencycheck' version '5.3.0' apply false
-    id "com.github.spotbugs" version "3.0.0" apply false
+    id 'maven-publish'
+    id 'com.github.ben-manes.versions' version '0.52.0' apply false
+    id 'org.owasp.dependencycheck' version '12.1.3' apply false
+    id "com.github.spotbugs" version "6.2.1" apply false
 }
 
 def buildProjects() {
@@ -36,7 +36,6 @@ configure(buildProjects()) {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 }
@@ -48,7 +47,7 @@ configure(exampleProjects()) {
 
 configure(libraryProjects()) {
     apply plugin: 'com.android.library'
-//    apply plugin: 'com.vanniktech.maven.publish'
+    apply plugin: 'maven-publish'
 }
 
 allprojects {
