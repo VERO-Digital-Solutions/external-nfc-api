@@ -6,7 +6,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 groupId = 'com.github.VERO-Digital-Solutions.external-nfc-api'
-                version = '1.0.0-rizia'
+                version = '1.0.0'
             }
         }
         repositories {
